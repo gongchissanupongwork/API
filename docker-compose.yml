@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .                   # build docker image จาก Dockerfile ใน root โฟลเดอร์
+    container_name: My-Apollo-API # ชื่อ container
+    ports:
+      - "4000:4000"               # map port 4000 บนเครื่อง host ไปยัง container
+    env_file:
+      - ./server/.env             # โหลด environment variables จากไฟล์ .env
+    volumes:
+      - ./server/data:/app/server/data  # แมปข้อมูลโฟลเดอร์ data ระหว่าง host กับ container (เพื่อให้ข้อมูล persist)
+    restart: unless-stopped        # ตั้งค่า restart policy
