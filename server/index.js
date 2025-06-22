@@ -11,6 +11,7 @@ const helmet = require("helmet");
 const lookupRoutes = require("./routes/lookup.routes.js");
 const caseroutes = require('./routes/case.routes.js');
 const userRoutes = require('./routes/user.routes.js');
+const authRoutes = require("./routes/auth.routes");
 
 
 const port = 4000;
@@ -29,6 +30,7 @@ const swaggerDocument = YAML.parse(fs.readFileSync(swaggerPath, 'utf8'));
 app.use('/', caseroutes);
 app.use('/accounts', userRoutes);
 app.use("/lookup", lookupRoutes);
+app.use("/login", authRoutes);
 
 
 // Root route
