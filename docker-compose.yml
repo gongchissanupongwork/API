@@ -3,12 +3,28 @@ version: "3.8"
 services:
   api:
     build:
-      context: .                   # build docker image จาก Dockerfile ใน root โฟลเดอร์
-    container_name: My-Apollo-API # ชื่อ container
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: my-apollo-api
     ports:
-      - "4000:4000"               # map port 4000 บนเครื่อง host ไปยัง container
+      - "4000:4000"
     env_file:
-      - ./server/.env             # โหลด environment variables จากไฟล์ .env
+      - ./server/.env
     volumes:
-      - ./server/data:/app/server/data  # แมปข้อมูลโฟลเดอร์ data ระหว่าง host กับ container (เพื่อให้ข้อมูล persist)
-    restart: unless-stopped        # ตั้งค่า restart policy
+      - ./server/data:/app/server/data
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile-client
+    container_name: my-react-client
+    ports:
+      - "3000:3000"  # Vite dev server port
+    env_file:
+      - ./client/.env
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    restart: unless-stopped
+    command: ["npm", "run", "dev"]

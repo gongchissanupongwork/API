@@ -59,3 +59,5 @@ Dockerfile.dev
 
 # Optional REPL history
 .node_repl_history
+
+/data/history*.json

@@ -1,7 +1,7 @@
-// middleware/requireUserEmail.js
 const { request, gql } = require("graphql-request");
 const { GRAPHQL_ENDPOINT, TOKEN } = require("../config/apollo.config.js");
 
+// GraphQL query สำหรับดึงรายชื่อผู้ใช้ทั้งหมด
 const USERS_QUERY = gql`
   query {
     users {
@@ -17,17 +17,22 @@ const USERS_QUERY = gql`
   }
 `;
 
+// ✅ Optional: normalize IP like ::1 => 127.0.0.1
 const normalizeIP = (ip) => {
   if (!ip) return "unknown";
   return ip === "::1" ? "127.0.0.1" : ip;
 };
 
+/**
+ * Middleware ตรวจสอบ user_email จาก header ว่ามีในระบบหรือไม่
+ */
 const requireUserEmail = async (req, res, next) => {
   const user_email = req.headers.user_email;
 
   if (!user_email || typeof user_email !== "string") {
-    res.status(401).json({ error: "Missing or invalid user_email in header" });
-    return next(new Error("Missing or invalid user_email in header"));
+    return res
+      .status(401)
+      .json({ error: "Missing or invalid user_email in header" });
   }
 
   try {
@@ -50,8 +55,7 @@ const requireUserEmail = async (req, res, next) => {
     );
 
     if (!matchedUser) {
-      res.status(403).json({ error: "Unauthorized user_email" });
-      return next(new Error("Unauthorized user_email"));
+      return res.status(403).json({ error: "Unauthorized user_email" });
     }
 
     const ipAddress =
@@ -76,7 +80,6 @@ const requireUserEmail = async (req, res, next) => {
   } catch (err) {
     console.error("❌ Authentication error:", err.message);
     res.status(500).json({ error: "Failed to authenticate user_email" });
-    next(err);
   }
 };
 

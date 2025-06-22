@@ -1,4 +1,3 @@
-// server/routes/lookup.routes.js
 const express = require("express");
 const router = express.Router();
 const { request } = require("graphql-request");
@@ -8,10 +7,10 @@ const { requireUserEmail } = require("../middleware/authMiddleware");
 
 const headers = { Authorization: `Bearer ${TOKEN}` };
 
-// POST /lookup/incidents
 router.post("/lookup/incidents", requireUserEmail, async (req, res) => {
   const { incident_ids } = req.body;
   if (!Array.isArray(incident_ids) || incident_ids.length === 0) {
+    res.setHeader("Content-Type", "application/json");
     return res.status(400).json({ error: "Missing or invalid 'incident_ids'" });
   }
 
@@ -31,17 +30,19 @@ router.post("/lookup/incidents", requireUserEmail, async (req, res) => {
         results.push({ id, error: "Incident not found" });
       }
     } catch (err) {
+      console.error(`Error fetching incident ID ${id}:`, err.message || err);
       results.push({ id, error: "Error fetching incident" });
     }
   }
 
+  res.setHeader("Content-Type", "application/json");
   res.json({ incidents: results });
 });
 
-// POST /lookup/users
 router.post("/lookup/users", requireUserEmail, async (req, res) => {
   const { user_emails } = req.body;
   if (!Array.isArray(user_emails) || user_emails.length === 0) {
+    res.setHeader("Content-Type", "application/json");
     return res.status(400).json({ error: "Missing or invalid 'user_emails'" });
   }
 
@@ -56,15 +57,19 @@ router.post("/lookup/users", requireUserEmail, async (req, res) => {
     const users = data?.users?.edges?.map((e) => e.node) || [];
     const result = user_emails.map((email) => {
       const found = users.find(
-        (u) => u.user_email.toLowerCase() === email.toLowerCase()
+        (u) =>
+          u.user_email &&
+          u.user_email.toLowerCase() === email.toLowerCase()
       );
       return found
         ? { user_email: found.user_email, account_status: found.account_status }
         : { user_email: email, error: "User not found" };
     });
 
+    res.setHeader("Content-Type", "application/json");
     res.json({ users: result });
   } catch (err) {
+    console.error("Error fetching user data:", err.message || err);
     res.status(500).json({ error: "Failed to fetch user data" });
   }
 });

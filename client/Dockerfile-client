@@ -1,0 +1,28 @@
+# ใช้ Node.js 20 base image สำหรับ build
+FROM node:20 AS build
+
+WORKDIR /app
+
+# คัดลอก package.json, package-lock.json ของ client
+COPY client/package*.json ./
+
+# ติดตั้ง dependencies client
+RUN npm install
+
+# คัดลอก source code client
+COPY client ./
+
+# สร้างไฟล์ production build
+RUN npm run build
+
+# --- Serve แบบ static ด้วย nginx ---
+FROM nginx:stable-alpine
+
+# คัดลอกไฟล์ build จาก stage ก่อนหน้า ไปยังโฟลเดอร์ nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# เปิดพอร์ต 80 สำหรับเว็บ
+EXPOSE 80
+
+# รัน nginx ใน foreground
+CMD ["nginx", "-g", "daemon off;"]
