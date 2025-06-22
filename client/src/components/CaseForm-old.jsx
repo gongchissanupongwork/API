@@ -1,9 +1,9 @@
-// 📁 CaseForm.jsx (เวอร์ชันตกแต่ง UI/UX)
+// CaseForm.jsx
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./CaseForm.css"; // 🎨 import ไฟล์ CSS ที่ตกแต่ง UI
 
+// 💡 BASE URL ควรตั้งจาก .env (สำหรับแยก dev/prod)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 function parseCSV(input) {
@@ -25,8 +25,10 @@ export default function CaseForm() {
   const [alertStatus, setAlertStatus] = useState("ไม่เปลี่ยนแปลง");
   const [caseResult, setCaseResult] = useState("ไม่เปลี่ยนแปลง");
   const [reason, setReason] = useState("");
+
   const [mappedIncidents, setMappedIncidents] = useState([]);
   const [mappedUsers, setMappedUsers] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   // =================== 🔓 LOGOUT ===================
@@ -81,7 +83,6 @@ export default function CaseForm() {
   }, [incidentInput, userEmail]);
 
   // =================== 🔍 USER LOOKUP ===================
-
   useEffect(() => {
     if (!isLoggedIn) return;
     const emails = parseCSV(userEmailInput);
@@ -101,7 +102,6 @@ export default function CaseForm() {
   }, [userEmailInput, userEmail]);
 
   // =================== 🔄 UPDATE ALERT ===================
-
   async function updateAlertStatusBatch() {
     const payload = mappedIncidents
       .filter((inc) => !inc.error)
@@ -190,107 +190,120 @@ export default function CaseForm() {
   }
 
   // =================== 🧩 RENDERING ===================
-  return (
-    <div className="centered-container">
-      {!isLoggedIn ? (
-        <div className="card">
-          <h2>🔐 Login</h2>
-          <form onSubmit={handleLogin}>
-            <input
-              type="email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              autoComplete="username"
-            />
-            <button type="submit">Login</button>
-          </form>
-        </div>
-      ) : (
-        <div className="main-container">
-          <header className="header">
-            <h2>🛠️ Manage Incidents</h2>
-            <button onClick={handleLogout} className="logout-button">Logout</button>
-          </header>
-
-          <section>
-            <label>Incident IDs (comma separated)</label>
-            <input
-              type="text"
-              value={incidentInput}
-              onChange={(e) => setIncidentInput(e.target.value)}
-              placeholder="e.g. INC123, INC456"
-            />
-            <div className="status-list">
-              {mappedIncidents.map((i) => (
-                <div key={i.id} className={`status-item ${i.error ? "error" : "success"}`}>
-                  {i.error ? `❌ ${i.id}: ${i.error}` : `✅ ${i.id} - ${i.alert_name} (${i.alert_status}, ${i.case_result})`}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="grid-2">
-            <div>
-              <label>Alert Status</label>
-              <select value={alertStatus} onChange={(e) => setAlertStatus(e.target.value)}>
-                <option>ไม่เปลี่ยนแปลง</option>
-                <option>Closed</option>
-              </select>
-            </div>
-            <div>
-              <label>Case Result</label>
-              <select value={caseResult} onChange={(e) => setCaseResult(e.target.value)}>
-                <option>ไม่เปลี่ยนแปลง</option>
-                <option>WaitingAnalysis</option>
-                <option>TruePositives</option>
-                <option>FalsePositives</option>
-              </select>
-            </div>
-          </section>
-
-          {caseResult !== "ไม่เปลี่ยนแปลง" && (
-            <section>
-              <label>Reason</label>
-              <input
-                type="text"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Reason for case result change"
-              />
-            </section>
-          )}
-
-          <button onClick={handleUpdate} disabled={loading}>
-            {loading ? "Updating..." : "Update Selected Incidents"}
+  if (!isLoggedIn) {
+    return (
+      <div className="max-w-md mx-auto mt-10 p-4 border rounded-xl shadow">
+        <h2 className="text-xl font-bold mb-2">🔐 Login</h2>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full p-2 border rounded"
+            required
+          />
+          <button type="submit" className="w-full mt-4 bg-blue-600 text-white py-2 rounded">
+            Login
           </button>
+        </form>
+        <ToastContainer position="top-center" autoClose={3000} />
+      </div>
+    );
+  }
 
-          <hr />
+  return (
+    <div className="max-w-3xl mx-auto p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">🛠️ Manage Incidents</h2>
+        <button onClick={handleLogout} className="text-sm underline text-red-500">
+          Logout
+        </button>
+      </div>
 
-          <section>
-            <h3>🔓 Unlock Users</h3>
-            <label>User Emails (comma separated)</label>
-            <input
-              type="text"
-              value={userEmailInput}
-              onChange={(e) => setUserEmailInput(e.target.value)}
-              placeholder="e.g. user1@example.com, user2@example.com"
-            />
-            <div className="status-list">
-              {mappedUsers.map((u) => (
-                <div key={u.user_email} className={`status-item ${u.error ? "error" : "success"}`}>
-                  {u.error ? `❌ ${u.user_email}: ${u.error}` : `✅ ${u.user_email} - ${u.account_status}`}
-                </div>
-              ))}
+      <div>
+        <label>Incident IDs (comma separated)</label>
+        <input
+          type="text"
+          value={incidentInput}
+          onChange={(e) => setIncidentInput(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <div className="mt-2 space-y-1">
+          {mappedIncidents.map((i) => (
+            <div key={i.id} className={i.error ? "text-red-600" : "text-green-600"}>
+              {i.error ? `❌ ${i.id}: ${i.error}` : `✅ ${i.id} - ${i.alert_name} (${i.alert_status}, ${i.case_result})`}
             </div>
+          ))}
+        </div>
+      </div>
 
-            <button onClick={handleUnlockUsers} style={{ marginTop: "20px" }}>
-              Unlock Users
-            </button>
-          </section>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label>Alert Status</label>
+          <select value={alertStatus} onChange={(e) => setAlertStatus(e.target.value)} className="w-full p-2 border rounded">
+            <option>ไม่เปลี่ยนแปลง</option>
+            <option>Closed</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Case Result</label>
+          <select value={caseResult} onChange={(e) => setCaseResult(e.target.value)} className="w-full p-2 border rounded">
+            <option>ไม่เปลี่ยนแปลง</option>
+            <option>WaitingAnalysis</option>
+            <option>TruePositives</option>
+            <option>FalsePositives</option>
+          </select>
+        </div>
+      </div>
+
+      {caseResult !== "ไม่เปลี่ยนแปลง" && (
+        <div>
+          <label>Reason</label>
+          <input
+            type="text"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
         </div>
       )}
+
+      <button
+        onClick={handleUpdate}
+        disabled={loading}
+        className="bg-blue-600 text-white w-full py-2 rounded disabled:opacity-50"
+      >
+        {loading ? "Updating..." : "Update Selected Incidents"}
+      </button>
+
+      <hr className="my-6" />
+
+      <div>
+        <h2 className="text-xl font-bold">🔓 Unlock Users</h2>
+        <label>User Emails (comma separated)</label>
+        <input
+          type="text"
+          value={userEmailInput}
+          onChange={(e) => setUserEmailInput(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <div className="mt-2 space-y-1">
+          {mappedUsers.map((u) => (
+            <div key={u.user_email} className={u.error ? "text-red-600" : "text-green-600"}>
+              {u.error ? `❌ ${u.user_email}: ${u.error}` : `✅ ${u.user_email} - ${u.account_status}`}
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={handleUnlockUsers}
+          className="bg-green-600 text-white w-full mt-4 py-2 rounded"
+        >
+          Unlock Users
+        </button>
+      </div>
 
       <ToastContainer position="top-center" autoClose={3000} />
     </div>

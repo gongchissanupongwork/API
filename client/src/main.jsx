@@ -4,7 +4,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 // นำเข้า styles ของ react-toastify (จำเป็นสำหรับแสดง toast ให้สวยงาม)
 import "react-toastify/dist/ReactToastify.css";
-import "./index.css"; //
 
 
 // สร้าง root element สำหรับ render React app ลงใน <div id="root"></div> ใน index.html

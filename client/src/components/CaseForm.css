@@ -1,0 +1,187 @@
+/* 📁 CaseForm.css */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
+}
+
+.centered-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card input,
+.card button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.card button {
+  background-color: #1e40af;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.card button:hover {
+  background-color: #153191;
+}
+
+.main-container {
+  background: white;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  background-color: #1e40af;
+  color: white;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #153191;
+}
+
+.status-list {
+  margin-top: 1rem;
+}
+
+.status-item {
+  margin: 0.25rem 0;
+  font-weight: 500;
+}
+
+.status-item.success {
+  color: green;
+}
+
+.status-item.error {
+  color: red;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+/* ✅ Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr; /* เปลี่ยนจาก 2 คอลัมน์เป็น 1 คอลัมน์บนจอเล็ก */
+  }
+
+  .card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .logout-button {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .card,
+  .main-container {
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+
+  button {
+    font-size: 0.95rem;
+    padding: 0.65rem;
+  }
+
+  input,
+  select {
+    font-size: 0.95rem;
+  }
+
+  .status-item {
+    font-size: 0.9rem;
+  }
+}
